@@ -23,7 +23,7 @@ object CryptoModule {
 
     @Provides
     @Singleton
-    fun provideCryptoRepository(cryptoApi: CryptoApi): CryptoRepositoryImpl {
+    fun provideCryptoRepository(cryptoApi: CryptoApi): CryptoRepository {
         return CryptoRepositoryImpl(cryptoApi)
     }
 

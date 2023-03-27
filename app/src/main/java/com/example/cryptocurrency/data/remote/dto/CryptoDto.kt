@@ -19,8 +19,7 @@ data class CryptoDto(
     val changePercent: String,
     @SerializedName("usdt_volume")
     val usdtVolume: String,
-    @SerializedName("additional_names")
-    val additionalNames: List<String>,
+
     @SerializedName("created")
     val created: String,
     @SerializedName("is_swappable")
