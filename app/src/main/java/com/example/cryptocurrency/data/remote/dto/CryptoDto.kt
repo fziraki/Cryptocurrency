@@ -1,7 +1,7 @@
 package com.example.cryptocurrency.data.remote.dto
 
 
-import com.example.cryptocurrency.data.local.CryptoEntity
+import com.example.cryptocurrency.data.local.entity.CryptoEntity
 import com.google.gson.annotations.SerializedName
 
 data class CryptoDto(
@@ -31,11 +31,9 @@ data class CryptoDto(
         return CryptoEntity(
             id = id,
             name = name,
-            nameFa = nameFa,
             symbol = symbol,
             priceInUsdt = priceInUsdt,
-            changePercent = changePercent,
-            usdtVolume = usdtVolume
+            changePercent = changePercent
         )
     }
 }

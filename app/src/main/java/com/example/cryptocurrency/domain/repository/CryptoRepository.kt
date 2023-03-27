@@ -7,4 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface CryptoRepository {
 
     fun getCryptoList(): Flow<Resource<List<Crypto>>>
+    fun getPinnedCryptoList(): Flow<Resource<List<Crypto>>>
+    fun pinCrypto(crypto: Crypto): Flow<Resource<Long>>
+    fun unPinCrypto(cryptoId: Int): Flow<Resource<Int>>
+
 }

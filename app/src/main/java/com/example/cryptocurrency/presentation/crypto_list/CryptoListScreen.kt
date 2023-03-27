@@ -42,6 +42,7 @@ fun CryptoListScreen(
                             )
                         }
                     }
+                    else -> {}
                 }
             }
         }
@@ -90,10 +91,11 @@ fun CryptoListScreen(
             }
 
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(state.cryptos) { crypto ->
+                items(state.cryptosToShow) { crypto ->
                     CryptoListItem(
                         crypto = crypto,
-                        onItemClick = {
+                        onItemPinClick = { toggledCrypto, isPinned ->
+                            viewModel.onUiEvent(CryptoListViewModel.UiEvent.TogglePin(toggledCrypto, isPinned))
                         }
                     )
                 }
