@@ -1,6 +1,9 @@
 package com.example.cryptocurrency.di
 
+import android.app.Application
+import androidx.room.Room
 import com.example.cryptocurrency.common.Constants.BASE_URL
+import com.example.cryptocurrency.data.local.CryptoDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +18,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideCryptoDatabase(app: Application): CryptoDatabase {
+        return Room.databaseBuilder(
+            app, CryptoDatabase::class.java, "crypto_db"
+        ).build()
+    }
 
     @Provides
     @Singleton
