@@ -12,6 +12,9 @@ interface CryptoDao {
     @Query("SELECT * FROM CryptoEntity")
     suspend fun getCryptos(): List<CryptoEntity>
 
+    @Query("SELECT * FROM CryptoEntity LIMIT :pageSize OFFSET :startingIndex")
+    suspend fun getCryptosByPage(startingIndex: Int, pageSize: Int): List<CryptoEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCryptos(cryptos: List<CryptoEntity>)
 

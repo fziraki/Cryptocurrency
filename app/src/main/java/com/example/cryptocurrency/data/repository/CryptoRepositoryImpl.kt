@@ -5,6 +5,7 @@ import com.example.cryptocurrency.data.local.dao.CryptoDao
 import com.example.cryptocurrency.data.remote.CryptoApi
 import com.example.cryptocurrency.domain.model.Crypto
 import com.example.cryptocurrency.domain.repository.CryptoRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -16,11 +17,13 @@ class CryptoRepositoryImpl @Inject constructor(
     private val cryptoDao: CryptoDao
 ): CryptoRepository {
 
-    override fun getCryptoList(): Flow<Resource<List<Crypto>>> = flow {
+    override fun getCryptoList(page: Int, pageSize: Int): Flow<Resource<List<Crypto>>> = flow {
+
+        val startingIndex = page * pageSize
 
         emit(Resource.Loading())
 
-        val cachedCryptos = cryptoDao.getCryptos().map { it.toCrypto() }
+        val cachedCryptos = cryptoDao.getCryptosByPage(startingIndex, pageSize).map { it.toCrypto() }
         emit(Resource.Loading(data = cachedCryptos))
 
         try {
@@ -38,9 +41,22 @@ class CryptoRepositoryImpl @Inject constructor(
             ))
         }
 
-        val newCachedPoets = cryptoDao.getCryptos().map { it.toCrypto() }
+        val newCachedPoets = cryptoDao.getCryptosByPage(startingIndex, pageSize).map { it.toCrypto() }
         emit(Resource.Success(newCachedPoets))
 
     }
+
+    override fun getCryptoListByPage(page: Int, pageSize: Int): Flow<Result<List<Crypto>>> = flow {
+        delay(2000L)
+        val startingIndex = page * pageSize
+        val dbSize = cryptoDao.getCryptos().size
+        if(dbSize - startingIndex > 0) {
+            val finalPageSize = if (dbSize - startingIndex < pageSize) dbSize-startingIndex else pageSize
+            val cachedCryptos = cryptoDao.getCryptosByPage(startingIndex, finalPageSize)
+                .map { it.toCrypto() }
+            emit(Result.success(cachedCryptos))
+        } else emit(Result.success(emptyList()))
+    }
+
 
 }

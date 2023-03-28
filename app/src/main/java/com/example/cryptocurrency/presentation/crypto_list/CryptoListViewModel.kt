@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cryptocurrency.common.DefaultPaginator
 import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.domain.model.Crypto
 import com.example.cryptocurrency.domain.use_case.*
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CryptoListViewModel @Inject constructor(
     private val getCryptoListUseCase: GetCryptoListUseCase,
+    private val getCryptoListByPageUseCase: GetCryptoListByPageUseCase,
     private val getPinnedCryptoListUseCase: GetPinnedCryptoListUseCase,
     private val pinCryptoUseCase: PinCryptoUseCase,
     private val unPinCryptoUseCase: UnPinCryptoUseCase,
@@ -40,6 +42,28 @@ class CryptoListViewModel @Inject constructor(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
+    private val paginator = DefaultPaginator(
+        initialKey = state.value.page,
+        onLoadUpdated = {
+            _state.value = state.value.copy(isPagingLoading = it)
+        },
+        onRequest = { nextPage ->
+            getCryptoListByPageUseCase(nextPage).last()
+        },
+        getNextKey = {
+            state.value.page + 1
+        },
+        onError = {
+
+        }
+    ) { items, newKey ->
+        _state.value = state.value.copy(
+                        cryptosToShow = state.value.cryptosToShow + items,
+                        page = newKey,
+                        endReached = items.isEmpty()
+                    )
+    }
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String): UiEvent()
@@ -93,7 +117,7 @@ class CryptoListViewModel @Inject constructor(
 
     private fun getCryptos() {
         viewModelScope.launch {
-            getCryptoListUseCase().onEach { result ->
+            getCryptoListUseCase(0).onEach { result ->
                 when(result){
                     is Resource.Loading -> {
                         _cryptos.value = result.data?: emptyList()
@@ -130,6 +154,12 @@ class CryptoListViewModel @Inject constructor(
                     else -> {}
                 }
             }.launchIn(this)
+        }
+    }
+
+    fun loadNextItems() {
+        viewModelScope.launch {
+            paginator.loadNextItems()
         }
     }
 
