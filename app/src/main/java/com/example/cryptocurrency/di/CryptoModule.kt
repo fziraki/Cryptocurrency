@@ -4,10 +4,7 @@ import com.example.cryptocurrency.data.local.CryptoDatabase
 import com.example.cryptocurrency.data.remote.CryptoApi
 import com.example.cryptocurrency.data.repository.CryptoRepositoryImpl
 import com.example.cryptocurrency.domain.repository.CryptoRepository
-import com.example.cryptocurrency.domain.use_case.GetCryptoListUseCase
-import com.example.cryptocurrency.domain.use_case.GetPinnedCryptoListUseCase
-import com.example.cryptocurrency.domain.use_case.PinCryptoUseCase
-import com.example.cryptocurrency.domain.use_case.UnPinCryptoUseCase
+import com.example.cryptocurrency.domain.use_case.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +25,7 @@ object CryptoModule {
     @Provides
     @ViewModelScoped
     fun provideCryptoRepository(cryptoApi: CryptoApi, db: CryptoDatabase): CryptoRepository {
-        return CryptoRepositoryImpl(cryptoApi, db.cryptoDao, db.pinnedCryptoDao)
+        return CryptoRepositoryImpl(cryptoApi, db.cryptoDao, db.pinnedCryptoDao, db.likedCryptoDao)
     }
 
     @Provides
@@ -53,5 +50,23 @@ object CryptoModule {
     @ViewModelScoped
     fun provideUnPinCryptoUseCase(cryptoRepository: CryptoRepository): UnPinCryptoUseCase {
         return UnPinCryptoUseCase(cryptoRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetFavoriteCryptoListUseCase(cryptoRepository: CryptoRepository): GetLikedCryptoListUseCase {
+        return GetLikedCryptoListUseCase(cryptoRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideLikeCryptoUseCase(cryptoRepository: CryptoRepository): LikeCryptoUseCase {
+        return LikeCryptoUseCase(cryptoRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideUnLikeCryptoUseCase(cryptoRepository: CryptoRepository): UnLikeCryptoUseCase {
+        return UnLikeCryptoUseCase(cryptoRepository)
     }
 }

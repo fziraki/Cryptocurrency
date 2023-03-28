@@ -10,5 +10,8 @@ interface CryptoRepository {
     fun getPinnedCryptoList(): Flow<Resource<List<Crypto>>>
     fun pinCrypto(crypto: Crypto): Flow<Resource<Long>>
     fun unPinCrypto(cryptoId: Int): Flow<Resource<Int>>
+    fun getLikedCryptoList(): Flow<Resource<List<Crypto>>>
+    fun likeCrypto(crypto: Crypto): Flow<Resource<Long>>
+    fun unLikeCrypto(cryptoId: Int): Flow<Resource<Int>>
 
 }

@@ -1,30 +1,24 @@
-package com.example.cryptocurrency.presentation.crypto_list
+package com.example.cryptocurrency.presentation.favorite_crypto_list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cryptocurrency.presentation.components.CryptoListItem
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CryptoListScreen(
-    viewModel: CryptoListViewModel = hiltViewModel()
+fun FavoriteCryptoListScreen(
+    viewModel: FavoriteCryptoListViewModel = hiltViewModel()
 ) {
-
-    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val pullRefreshState = rememberPullRefreshState(isRefreshing, { viewModel.refresh() })
 
     val state = viewModel.state.value
     val eventFlow = viewModel.eventFlow
@@ -32,16 +26,16 @@ fun CryptoListScreen(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
+    viewModel.getFavoriteList()
+
     Scaffold(
-        modifier = Modifier
-            .pullRefresh(pullRefreshState),
         scaffoldState = scaffoldState
     ) {
 
         LaunchedEffect(true){
             eventFlow.collect { uiEvent ->
                 when(uiEvent) {
-                    is CryptoListViewModel.UiEvent.ShowSnackbar -> {
+                    is FavoriteCryptoListViewModel.UiEvent.ShowSnackbar -> {
                         coroutineScope.launch {
                             scaffoldState.snackbarHostState.showSnackbar(
                                 message = uiEvent.message
@@ -51,14 +45,6 @@ fun CryptoListScreen(
                     else -> {}
                 }
             }
-        }
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-            PullRefreshIndicator(
-                refreshing = isRefreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
 
         Column(modifier = Modifier
@@ -76,7 +62,7 @@ fun CryptoListScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 0.dp),
+                        .padding( top = 20.dp, start = 20.dp, end = 20.dp, bottom = 0.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -113,10 +99,10 @@ fun CryptoListScreen(
                     CryptoListItem(
                         crypto = crypto,
                         onItemPinClick = { toggledCrypto, isPinned ->
-                            viewModel.onUiEvent(CryptoListViewModel.UiEvent.TogglePin(toggledCrypto, isPinned))
+                            viewModel.onUiEvent(FavoriteCryptoListViewModel.UiEvent.TogglePin(toggledCrypto, isPinned))
                         },
                         onItemLikeClick = { toggledCrypto, isLiked ->
-                            viewModel.onUiEvent(CryptoListViewModel.UiEvent.ToggleLike(toggledCrypto, isLiked))
+                            viewModel.onUiEvent(FavoriteCryptoListViewModel.UiEvent.ToggleLike(toggledCrypto, isLiked))
                         }
                     )
                 }

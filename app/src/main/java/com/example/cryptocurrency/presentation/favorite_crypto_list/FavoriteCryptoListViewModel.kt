@@ -1,4 +1,4 @@
-package com.example.cryptocurrency.presentation.crypto_list
+package com.example.cryptocurrency.presentation.favorite_crypto_list
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -8,13 +8,15 @@ import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.domain.model.Crypto
 import com.example.cryptocurrency.domain.use_case.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CryptoListViewModel @Inject constructor(
-    private val getCryptoListUseCase: GetCryptoListUseCase,
+class FavoriteCryptoListViewModel @Inject constructor(
     private val getPinnedCryptoListUseCase: GetPinnedCryptoListUseCase,
     private val pinCryptoUseCase: PinCryptoUseCase,
     private val unPinCryptoUseCase: UnPinCryptoUseCase,
@@ -23,30 +25,16 @@ class CryptoListViewModel @Inject constructor(
     private val unLikeCryptoUseCase: UnLikeCryptoUseCase
 ): ViewModel() {
 
-    private val _state = mutableStateOf(CryptoListState())
-    val state: State<CryptoListState> = _state
+    private val _state = mutableStateOf(FavoriteCryptoListState())
+    val state: State<FavoriteCryptoListState> = _state
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing = _isRefreshing.asStateFlow()
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String): UiEvent()
         data class TogglePin(val crypto: Crypto, val isPinned: Boolean) : UiEvent()
         data class ToggleLike(val crypto: Crypto, val isLiked: Boolean) : UiEvent()
-    }
-
-    init {
-        refresh()
-    }
-
-    fun refresh() {
-        getPinnedCryptos()
-        getLikedCryptos()
-        getCryptos()
-        _isRefreshing.value = false
     }
 
     fun onUiEvent(event: UiEvent){
@@ -69,31 +57,10 @@ class CryptoListViewModel @Inject constructor(
         }
     }
 
-    private fun getCryptos() {
-        viewModelScope.launch {
-            getCryptoListUseCase().onEach { result ->
-                when(result){
-                    is Resource.Loading -> {
-                        _state.value = state.value.copy(isLoading = true,
-                            cryptos = result.data?: emptyList()
-                        )
-                    }
-                    is Resource.Success -> {
-                        _state.value = state.value.copy(isLoading = false,
-                            cryptos = result.data?: emptyList()
-                        )
-                    }
-                    is Resource.Error -> {
-                        _state.value = state.value.copy(isLoading = false,
-                            cryptos = result.data?: emptyList()
-                        )
-                        result.message?.let {
-                            _eventFlow.emit(UiEvent.ShowSnackbar(it))
-                        }
-                    }
-                }
-            }.launchIn(this)
-        }
+
+    fun getFavoriteList() {
+        getPinnedCryptos()
+        getLikedCryptos()
     }
 
     private fun getPinnedCryptos() {
@@ -193,5 +160,6 @@ class CryptoListViewModel @Inject constructor(
             }.launchIn(this)
         }
     }
+
 
 }

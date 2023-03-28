@@ -1,22 +1,18 @@
-package com.example.cryptocurrency.presentation.crypto_list
+package com.example.cryptocurrency.presentation.favorite_crypto_list
 
 import com.example.cryptocurrency.domain.model.Crypto
 
-data class CryptoListState(
+data class FavoriteCryptoListState(
     val isLoading: Boolean = false,
     val pinnedCryptos: List<Crypto> = emptyList(),
     val likedCryptos: List<Crypto> = emptyList(),
-    val cryptos: List<Crypto> = emptyList(),
 ){
     var cryptosToShow : List<Crypto> =
-        cryptos.map { crypto ->
+        likedCryptos.map { crypto ->
+            crypto.isLiked = true
             crypto.isPinned = pinnedCryptos
                 .any { pinnedCrypto ->
                     pinnedCrypto.id == crypto.id
-                }
-            crypto.isLiked = likedCryptos
-                .any { likedCrypto ->
-                    likedCrypto.id == crypto.id
                 }
             crypto
         }.sortedByDescending {

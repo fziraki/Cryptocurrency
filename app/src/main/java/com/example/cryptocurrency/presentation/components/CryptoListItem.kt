@@ -1,5 +1,6 @@
-package com.example.cryptocurrency.presentation.crypto_list.components
+package com.example.cryptocurrency.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,25 +25,30 @@ import com.example.cryptocurrency.domain.model.Crypto
 @Composable
 fun CryptoListItem(
     crypto: Crypto,
-    onItemPinClick: (Crypto, Boolean) -> Unit
+    onItemPinClick: (Crypto, Boolean) -> Unit,
+    onItemLikeClick: (Crypto, Boolean) -> Unit
 ) {
+
+    val isCryptoPinned = rememberSaveable { mutableStateOf(crypto.isPinned) }
+
     Row(
         modifier = Modifier
+            .background(if (isCryptoPinned.value) Color.Gray.copy(alpha = 0.1f) else Color.Transparent)
             .fillMaxWidth()
             .padding(20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1.5f),
             text = "${crypto.name}\n(${crypto.symbol})",
             style = MaterialTheme.typography.body1,
             overflow = TextOverflow.Ellipsis
         )
 
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1.5f),
             text = "${crypto.priceInUsdtToShow} $",
             style = MaterialTheme.typography.body1
         )
@@ -54,10 +60,9 @@ fun CryptoListItem(
             style = MaterialTheme.typography.body1,
         )
 
-        val isCryptoPinned = rememberSaveable { mutableStateOf(crypto.isPinned) }
 
         IconButton(
-            modifier = Modifier,
+            modifier = Modifier.weight(1f),
             onClick = {
                     isCryptoPinned.value = !isCryptoPinned.value
                     onItemPinClick(crypto, isCryptoPinned.value)
@@ -65,12 +70,33 @@ fun CryptoListItem(
         ) {
             Icon(
                 painter = if (isCryptoPinned.value){
-                    painterResource(id = R.drawable.ic_bookmark_filled)
+                    painterResource(id = R.drawable.ic_pin_filled)
                 } else{
-                    painterResource(id = R.drawable.ic_bookmark_border)
+                    painterResource(id = R.drawable.ic_pin_border)
                 },
                 tint = Color.LightGray,
                 contentDescription = "pin"
+            )
+        }
+
+
+        val isCryptoLiked = rememberSaveable { mutableStateOf(crypto.isLiked) }
+
+        IconButton(
+            modifier = Modifier.weight(1f),
+            onClick = {
+                isCryptoLiked.value = !isCryptoLiked.value
+                onItemLikeClick(crypto, isCryptoLiked.value)
+            }
+        ) {
+            Icon(
+                painter = if (isCryptoLiked.value){
+                    painterResource(id = R.drawable.ic_star_filled)
+                } else{
+                    painterResource(id = R.drawable.ic_star_border)
+                },
+                tint = Color.LightGray,
+                contentDescription = "like"
             )
         }
 
