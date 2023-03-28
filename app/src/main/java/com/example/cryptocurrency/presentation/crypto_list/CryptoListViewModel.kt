@@ -26,6 +26,15 @@ class CryptoListViewModel @Inject constructor(
     private val _state = mutableStateOf(CryptoListState())
     val state: State<CryptoListState> = _state
 
+    private val _pinned = MutableStateFlow<List<Crypto>>(emptyList())
+    private val pinned = _pinned.asStateFlow()
+
+    private val _liked = MutableStateFlow<List<Crypto>>(emptyList())
+    private val liked = _liked.asStateFlow()
+
+    private val _cryptos = MutableStateFlow<List<Crypto>>(emptyList())
+    private val cryptos = _cryptos.asStateFlow()
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
@@ -40,6 +49,19 @@ class CryptoListViewModel @Inject constructor(
 
     init {
         refresh()
+        viewModelScope.launch {
+            cryptos.collect { cryptoList ->
+                cryptoList.map { crypto ->
+                    crypto.isPinned = pinned.value.any { it.id == crypto.id }
+                    crypto.isLiked = liked.value.any { it.id == crypto.id }
+                    crypto
+                }.sortedByDescending {
+                    it.isPinned
+                }.apply {
+                    _state.value = state.value.copy(cryptosToShow = this)
+                }
+            }
+        }
     }
 
     fun refresh() {
@@ -74,19 +96,16 @@ class CryptoListViewModel @Inject constructor(
             getCryptoListUseCase().onEach { result ->
                 when(result){
                     is Resource.Loading -> {
-                        _state.value = state.value.copy(isLoading = true,
-                            cryptos = result.data?: emptyList()
-                        )
+                        _cryptos.value = result.data?: emptyList()
+                        _state.value = state.value.copy(isLoading = true)
                     }
                     is Resource.Success -> {
-                        _state.value = state.value.copy(isLoading = false,
-                            cryptos = result.data?: emptyList()
-                        )
+                        _cryptos.value = result.data?: emptyList()
+                        _state.value = state.value.copy(isLoading = false)
                     }
                     is Resource.Error -> {
-                        _state.value = state.value.copy(isLoading = false,
-                            cryptos = result.data?: emptyList()
-                        )
+                        _cryptos.value = result.data?: emptyList()
+                        _state.value = state.value.copy(isLoading = false)
                         result.message?.let {
                             _eventFlow.emit(UiEvent.ShowSnackbar(it))
                         }
@@ -101,8 +120,7 @@ class CryptoListViewModel @Inject constructor(
             getPinnedCryptoListUseCase().onEach { result ->
                 when(result){
                     is Resource.Success -> {
-                        _state.value = state.value
-                            .copy(pinnedCryptos = result.data?: emptyList())
+                        _pinned.value = result.data?: emptyList()
                     }
                     is Resource.Error -> {
                         result.message?.let {
@@ -150,8 +168,7 @@ class CryptoListViewModel @Inject constructor(
             getLikedCryptoListUseCase().onEach { result ->
                 when(result){
                     is Resource.Success -> {
-                        _state.value = state.value
-                            .copy(likedCryptos = result.data?: emptyList())
+                        _liked.value = result.data?: emptyList()
                     }
                     is Resource.Error -> {
                         result.message?.let {

@@ -8,10 +8,7 @@ import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.domain.model.Crypto
 import com.example.cryptocurrency.domain.use_case.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +27,13 @@ class FavoriteCryptoListViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
+    private val _pinned = MutableStateFlow<List<Crypto>>(emptyList())
+    private val pinned = _pinned.asStateFlow()
+
+    private val _liked = MutableStateFlow<List<Crypto>>(emptyList())
+    private val liked = _liked.asStateFlow()
+
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String): UiEvent()
@@ -57,8 +61,24 @@ class FavoriteCryptoListViewModel @Inject constructor(
         }
     }
 
+    init {
+        getFavoriteList()
+        viewModelScope.launch {
+            liked.collect { likedList ->
+                likedList.map { crypto ->
+                    crypto.isLiked = true
+                    crypto.isPinned = pinned.value.any { it.id == crypto.id }
+                    crypto
+                }.sortedByDescending {
+                    it.isPinned
+                }.apply {
+                    _state.value = state.value.copy(cryptosToShow = this)
+                }
+            }
+        }
+    }
 
-    fun getFavoriteList() {
+    private fun getFavoriteList() {
         getPinnedCryptos()
         getLikedCryptos()
     }
@@ -68,8 +88,7 @@ class FavoriteCryptoListViewModel @Inject constructor(
             getPinnedCryptoListUseCase().onEach { result ->
                 when(result){
                     is Resource.Success -> {
-                        _state.value = state.value
-                            .copy(pinnedCryptos = result.data?: emptyList())
+                        _pinned.value = result.data?: emptyList()
                     }
                     is Resource.Error -> {
                         result.message?.let {
@@ -117,8 +136,7 @@ class FavoriteCryptoListViewModel @Inject constructor(
             getLikedCryptoListUseCase().onEach { result ->
                 when(result){
                     is Resource.Success -> {
-                        _state.value = state.value
-                            .copy(likedCryptos = result.data?: emptyList())
+                        _liked.value = result.data?: emptyList()
                     }
                     is Resource.Error -> {
                         result.message?.let {

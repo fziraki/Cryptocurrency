@@ -25,7 +25,7 @@ object CryptoModule {
     @Provides
     @ViewModelScoped
     fun provideCryptoRepository(cryptoApi: CryptoApi, db: CryptoDatabase): CryptoRepository {
-        return CryptoRepositoryImpl(cryptoApi, db.cryptoDao, db.pinnedCryptoDao, db.likedCryptoDao)
+        return CryptoRepositoryImpl(cryptoApi, db.cryptoDao)
     }
 
     @Provides
@@ -34,39 +34,4 @@ object CryptoModule {
         return GetCryptoListUseCase(cryptoRepository)
     }
 
-    @Provides
-    @ViewModelScoped
-    fun provideGetPinnedCryptoListUseCase(cryptoRepository: CryptoRepository): GetPinnedCryptoListUseCase {
-        return GetPinnedCryptoListUseCase(cryptoRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun providePinCryptoUseCase(cryptoRepository: CryptoRepository): PinCryptoUseCase {
-        return PinCryptoUseCase(cryptoRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideUnPinCryptoUseCase(cryptoRepository: CryptoRepository): UnPinCryptoUseCase {
-        return UnPinCryptoUseCase(cryptoRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideGetFavoriteCryptoListUseCase(cryptoRepository: CryptoRepository): GetLikedCryptoListUseCase {
-        return GetLikedCryptoListUseCase(cryptoRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideLikeCryptoUseCase(cryptoRepository: CryptoRepository): LikeCryptoUseCase {
-        return LikeCryptoUseCase(cryptoRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideUnLikeCryptoUseCase(cryptoRepository: CryptoRepository): UnLikeCryptoUseCase {
-        return UnLikeCryptoUseCase(cryptoRepository)
-    }
 }

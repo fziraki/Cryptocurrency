@@ -26,8 +26,6 @@ fun FavoriteCryptoListScreen(
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
-    viewModel.getFavoriteList()
-
     Scaffold(
         scaffoldState = scaffoldState
     ) {

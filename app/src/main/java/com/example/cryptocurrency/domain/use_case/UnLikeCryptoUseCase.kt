@@ -1,14 +1,14 @@
 package com.example.cryptocurrency.domain.use_case
 
 import com.example.cryptocurrency.common.Resource
-import com.example.cryptocurrency.domain.repository.CryptoRepository
+import com.example.cryptocurrency.domain.repository.LikedCryptoRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class UnLikeCryptoUseCase @Inject constructor(
-    private val cryptoRepository: CryptoRepository
+    private val likedCryptoRepository: LikedCryptoRepository
 ) {
     operator fun invoke(cryptoId: Int): Flow<Resource<Int>> {
-        return cryptoRepository.unLikeCrypto(cryptoId)
+        return likedCryptoRepository.unLikeCrypto(cryptoId)
     }
 }

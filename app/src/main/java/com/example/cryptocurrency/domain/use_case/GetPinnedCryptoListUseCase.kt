@@ -2,14 +2,14 @@ package com.example.cryptocurrency.domain.use_case
 
 import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.domain.model.Crypto
-import com.example.cryptocurrency.domain.repository.CryptoRepository
+import com.example.cryptocurrency.domain.repository.PinnedCryptoRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetPinnedCryptoListUseCase @Inject constructor(
-    private val cryptoRepository: CryptoRepository
+    private val pinnedCryptoRepository: PinnedCryptoRepository
 ) {
     operator fun invoke(): Flow<Resource<List<Crypto>>> {
-        return cryptoRepository.getPinnedCryptoList()
+        return pinnedCryptoRepository.getPinnedCryptoList()
     }
 }
