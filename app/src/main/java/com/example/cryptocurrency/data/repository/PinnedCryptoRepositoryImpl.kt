@@ -28,7 +28,6 @@ class PinnedCryptoRepositoryImpl @Inject constructor(
         try {
             pinnedCryptoDao.insertPinnedCryptos(crypto.toPinnedCryptoEntity())
             emit(Resource.Success(1))
-            println("tag pinCrypto")
         }catch (e: IOException){
             emit(Resource.Error(message = "Couldn't pin crypto."))
         }
@@ -39,9 +38,18 @@ class PinnedCryptoRepositoryImpl @Inject constructor(
         try {
             pinnedCryptoDao.deletePinnedCryptos(cryptoId)
             emit(Resource.Success(1))
-            println("tag unPinCrypto")
         }catch (e: IOException){
             emit(Resource.Error(message = "Couldn't unPin crypto."))
+        }
+    }
+
+    override fun updatePinnedCryptoLikeField(cryptoId: Int, isLiked: Boolean): Flow<Resource<Int>> = flow {
+        emit(Resource.Loading())
+        try {
+            pinnedCryptoDao.updatePinnedCryptoLikeField(cryptoId, isLiked)
+            emit(Resource.Success(1))
+        }catch (e: IOException){
+            emit(Resource.Error(message = "Couldn't update crypto pin."))
         }
     }
 

@@ -8,4 +8,5 @@ interface LikedCryptoRepository {
     fun getLikedCryptoList(): Flow<Resource<List<Crypto>>>
     fun likeCrypto(crypto: Crypto): Flow<Resource<Long>>
     fun unLikeCrypto(cryptoId: Int): Flow<Resource<Int>>
+    fun updateLikedCryptoPinField(cryptoId: Int, isPinned: Boolean): Flow<Resource<Int>>
 }

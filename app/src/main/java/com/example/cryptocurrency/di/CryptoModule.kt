@@ -25,7 +25,7 @@ object CryptoModule {
     @Provides
     @ViewModelScoped
     fun provideCryptoRepository(cryptoApi: CryptoApi, db: CryptoDatabase): CryptoRepository {
-        return CryptoRepositoryImpl(cryptoApi, db.cryptoDao, db.pinnedCryptoDao)
+        return CryptoRepositoryImpl(cryptoApi, db.cryptoDao, db.pinnedCryptoDao, db.likedCryptoDao)
     }
 
     @Provides
@@ -38,6 +38,12 @@ object CryptoModule {
     @ViewModelScoped
     fun provideUpdateCryptoPinUseCase(cryptoRepository: CryptoRepository): UpdateCryptoPinUseCase {
         return UpdateCryptoPinUseCase(cryptoRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideUpdateCryptoLikeUseCase(cryptoRepository: CryptoRepository): UpdateCryptoLikeUseCase {
+        return UpdateCryptoLikeUseCase(cryptoRepository)
     }
 
 }

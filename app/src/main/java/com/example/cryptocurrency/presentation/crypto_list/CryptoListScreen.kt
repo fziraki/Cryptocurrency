@@ -2,6 +2,7 @@ package com.example.cryptocurrency.presentation.crypto_list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -13,16 +14,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.example.cryptocurrency.presentation.components.CryptoListItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CryptoListScreen(
-    navController: NavController,
-    viewModel: CryptoListViewModel = hiltViewModel()
-) {
+    viewModel: CryptoListViewModel = hiltViewModel(),
+    onButtonClick: () -> Unit,
+){
 
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullRefreshState(isRefreshing, { viewModel.refresh() })
@@ -106,9 +106,7 @@ fun CryptoListScreen(
 
                     Button(
                         modifier = Modifier.weight(2f),
-                        onClick = {
-//                            navController.navigate(Screen.CoinDetailScreen.route + "/${coin.id}")
-                        }
+                        onClick = onButtonClick
                     ) {
                         Text(
                             modifier = Modifier,
@@ -122,9 +120,9 @@ fun CryptoListScreen(
             }
 
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(state.cryptosToShow.size) { i ->
-                    val crypto = state.cryptosToShow[i]
-                    if (i >= state.cryptosToShow.size - 1 && !state.endReached && !state.isPagingLoading) {
+                items(items = state.cryptosToShow, key = { it.id }, contentType = { it }){ crypto ->
+                    val index = state.cryptosToShow.indexOf(crypto)
+                    if (index >= state.cryptosToShow.size - 1 && !state.endReached && !state.isPagingLoading) {
                         viewModel.loadNextItems()
                     }
                     CryptoListItem(

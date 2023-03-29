@@ -6,6 +6,7 @@ import com.example.cryptocurrency.domain.repository.LikedCryptoRepository
 import com.example.cryptocurrency.domain.use_case.GetLikedCryptoListUseCase
 import com.example.cryptocurrency.domain.use_case.LikeCryptoUseCase
 import com.example.cryptocurrency.domain.use_case.UnLikeCryptoUseCase
+import com.example.cryptocurrency.domain.use_case.UpdateLikeCryptoPinFieldUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,5 +39,11 @@ object LikedCryptoModule {
     @ViewModelScoped
     fun provideUnLikeCryptoUseCase(likedCryptoRepository: LikedCryptoRepository): UnLikeCryptoUseCase {
         return UnLikeCryptoUseCase(likedCryptoRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideUpdateLikeCryptoPinFieldUseCase(likedCryptoRepository: LikedCryptoRepository): UpdateLikeCryptoPinFieldUseCase {
+        return UpdateLikeCryptoPinFieldUseCase(likedCryptoRepository)
     }
 }

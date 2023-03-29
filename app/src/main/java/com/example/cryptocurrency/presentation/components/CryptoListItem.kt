@@ -11,7 +11,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +29,8 @@ fun CryptoListItem(
     onItemLikeClick: (Crypto, Boolean) -> Unit
 ) {
 
-    val isCryptoPinned = rememberSaveable { mutableStateOf(crypto.isPinned) }
+    val isCryptoPinned = remember { mutableStateOf(crypto.isPinned) }
+    val isCryptoLiked = remember { mutableStateOf(crypto.isLiked) }
 
     Row(
         modifier = Modifier
@@ -78,9 +79,6 @@ fun CryptoListItem(
                 contentDescription = "pin"
             )
         }
-
-
-        val isCryptoLiked = rememberSaveable { mutableStateOf(crypto.isLiked) }
 
         IconButton(
             modifier = Modifier.weight(1f),

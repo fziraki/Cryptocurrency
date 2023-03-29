@@ -27,14 +27,15 @@ data class CryptoDto(
     @SerializedName("volume")
     val volume: String
 ){
-    fun toCryptoEntity(isPinned: Boolean): CryptoEntity {
+    fun toCryptoEntity(isPinned: Boolean, isLiked: Boolean): CryptoEntity {
         return CryptoEntity(
             id = id,
             name = name,
             symbol = symbol,
             priceInUsdt = priceInUsdt,
             changePercent = changePercent,
-            isPinned = isPinned
+            isPinned = isPinned,
+            isLiked = isLiked
         )
     }
 }

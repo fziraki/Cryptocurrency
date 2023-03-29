@@ -1,0 +1,52 @@
+package com.example.cryptocurrency.presentation.components
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.cryptocurrency.domain.model.Crypto
+import com.example.cryptocurrency.presentation.crypto_list.CryptoListViewModel
+
+@Composable
+fun DrawerHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = "Favorite List", fontSize = 32.sp)
+    }
+}
+
+@Composable
+fun DrawerBody(
+    modifier: Modifier = Modifier,
+    onItemClick: (Crypto) -> Unit,
+    viewModel: CryptoListViewModel = hiltViewModel()
+) {
+
+    val state = viewModel.state.value
+
+    LazyColumn(modifier) {
+        items(state.liked, key = {it.id}) {
+            CryptoListItem(
+                crypto = it,
+                onItemPinClick = { toggledCrypto, isPinned ->
+                    viewModel.onUiEvent(CryptoListViewModel.UiEvent.TogglePin(toggledCrypto, isPinned))
+                },
+                onItemLikeClick = { toggledCrypto, isLiked ->
+                    viewModel.onUiEvent(CryptoListViewModel.UiEvent.ToggleLike(toggledCrypto, isLiked))
+                }
+            )
+        }
+    }
+}

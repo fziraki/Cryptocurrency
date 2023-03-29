@@ -7,5 +7,6 @@ data class CryptoListState(
     val cryptosToShow: List<Crypto> = emptyList(),
     val isPagingLoading: Boolean = false,
     val endReached: Boolean = false,
-    val page: Int = 1
+    val page: Int = 1,
+    val liked: List<Crypto> = emptyList()
 )

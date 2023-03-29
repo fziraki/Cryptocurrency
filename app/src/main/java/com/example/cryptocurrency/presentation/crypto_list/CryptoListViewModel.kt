@@ -22,17 +22,14 @@ class CryptoListViewModel @Inject constructor(
     private val updateCryptoPinUseCase: UpdateCryptoPinUseCase,
     private val getLikedCryptoListUseCase: GetLikedCryptoListUseCase,
     private val likeCryptoUseCase: LikeCryptoUseCase,
-    private val unLikeCryptoUseCase: UnLikeCryptoUseCase
-): ViewModel() {
+    private val unLikeCryptoUseCase: UnLikeCryptoUseCase,
+    private val updateCryptoLikeUseCase: UpdateCryptoLikeUseCase,
+    private val updatePinCryptoLikeFieldUseCase: UpdatePinCryptoLikeFieldUseCase,
+    private val updateLikeCryptoPinFieldUseCase: UpdateLikeCryptoPinFieldUseCase,
+    ): ViewModel() {
 
     private val _state = mutableStateOf(CryptoListState())
     val state: State<CryptoListState> = _state
-
-    private val _liked = MutableStateFlow<List<Crypto>>(emptyList())
-    private val liked = _liked.asStateFlow()
-
-    private val _cryptos = MutableStateFlow<List<Crypto>>(emptyList())
-    private val cryptos = _cryptos.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -55,8 +52,8 @@ class CryptoListViewModel @Inject constructor(
 
         }
     ) { items, newKey ->
-        _cryptos.value = state.value.cryptosToShow + items
         _state.value = state.value.copy(
+                        cryptosToShow = state.value.cryptosToShow + items,
                         page = newKey,
                         endReached = items.isEmpty()
                     )
@@ -69,16 +66,6 @@ class CryptoListViewModel @Inject constructor(
     }
 
     init {
-        viewModelScope.launch {
-            cryptos.collect { cryptoList ->
-                cryptoList.map { crypto ->
-                    crypto.isLiked = liked.value.any { it.id == crypto.id }
-                    crypto
-                }.apply {
-                    _state.value = state.value.copy(cryptosToShow = this)
-                }
-            }
-        }
         refresh()
     }
 
@@ -96,6 +83,7 @@ class CryptoListViewModel @Inject constructor(
                 }else {
                     unPinCrypto(event.crypto.id)
                 }
+                updateLikeCryptoPinField(event.crypto, event.isPinned)
                 updateCryptoPin(event.crypto, event.isPinned)
             }
             is UiEvent.ToggleLike -> {
@@ -104,6 +92,8 @@ class CryptoListViewModel @Inject constructor(
                 }else {
                     unLikeCrypto(event.crypto.id)
                 }
+                updatePinCryptoLikeField(event.crypto, event.isLiked)
+                updateCryptoLike(event.crypto, event.isLiked)
             }
             is UiEvent.ShowSnackbar -> {}
         }
@@ -113,16 +103,16 @@ class CryptoListViewModel @Inject constructor(
         getCryptoListUseCase(0).onEach { result ->
             when (result) {
                 is Resource.Loading -> {
-                    _cryptos.value = result.data ?: emptyList()
-                    _state.value = state.value.copy(isLoading = true)
+                    _state.value = state.value.copy(isLoading = true,
+                        cryptosToShow = result.data ?: emptyList())
                 }
                 is Resource.Success -> {
-                    _cryptos.value = result.data ?: emptyList()
-                    _state.value = state.value.copy(isLoading = false)
+                    _state.value = state.value.copy(isLoading = false,
+                        cryptosToShow = result.data ?: emptyList())
                 }
                 is Resource.Error -> {
-                    _cryptos.value = result.data ?: emptyList()
-                    _state.value = state.value.copy(isLoading = false)
+                    _state.value = state.value.copy(isLoading = false,
+                        cryptosToShow = result.data ?: emptyList())
                     result.message?.let {
                         _eventFlow.emit(UiEvent.ShowSnackbar(it))
                     }
@@ -150,9 +140,51 @@ class CryptoListViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+    private fun updateCryptoLike(crypto: Crypto, isLiked: Boolean) {
+        updateCryptoLikeUseCase(crypto, isLiked).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    result.message?.let {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(it))
+                    }
+                }
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun updatePinCryptoLikeField(crypto: Crypto, isLiked: Boolean) {
+        updatePinCryptoLikeFieldUseCase(crypto, isLiked).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    result.message?.let {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(it))
+                    }
+                }
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun updateLikeCryptoPinField(crypto: Crypto, isPinned: Boolean) {
+        updateLikeCryptoPinFieldUseCase(crypto, isPinned).onEach { result ->
+            when(result){
+                is Resource.Error -> {
+                    result.message?.let {
+                        _eventFlow.emit(UiEvent.ShowSnackbar(it))
+                    }
+                }
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
     private fun pinCrypto(crypto: Crypto) {
         pinCryptoUseCase(crypto).onEach { result ->
             when(result){
+                is Resource.Success -> {
+                    getLikedCryptos()
+                }
                 is Resource.Error -> {
                     result.message?.let {
                         _eventFlow.emit(UiEvent.ShowSnackbar(it))
@@ -166,6 +198,9 @@ class CryptoListViewModel @Inject constructor(
     private fun unPinCrypto(cryptoId: Int) {
         unPinCryptoUseCase(cryptoId).onEach { result ->
             when(result){
+                is Resource.Success -> {
+                    getLikedCryptos()
+                }
                 is Resource.Error -> {
                     result.message?.let {
                         _eventFlow.emit(UiEvent.ShowSnackbar(it))
@@ -180,7 +215,7 @@ class CryptoListViewModel @Inject constructor(
         getLikedCryptoListUseCase().onEach { result ->
             when(result){
                 is Resource.Success -> {
-                    _liked.value = result.data?: emptyList()
+                    _state.value = state.value.copy(liked = result.data?: emptyList())
                 }
                 is Resource.Error -> {
                     result.message?.let {
@@ -195,6 +230,9 @@ class CryptoListViewModel @Inject constructor(
     private fun likeCrypto(crypto: Crypto) {
         likeCryptoUseCase(crypto).onEach { result ->
             when(result){
+                is Resource.Success -> {
+                    getLikedCryptos()
+                }
                 is Resource.Error -> {
                     result.message?.let {
                         _eventFlow.emit(UiEvent.ShowSnackbar(it))
@@ -208,6 +246,9 @@ class CryptoListViewModel @Inject constructor(
     private fun unLikeCrypto(cryptoId: Int) {
         unLikeCryptoUseCase(cryptoId).onEach { result ->
             when(result){
+                is Resource.Success -> {
+                    getLikedCryptos()
+                }
                 is Resource.Error -> {
                     result.message?.let {
                         _eventFlow.emit(UiEvent.ShowSnackbar(it))

@@ -14,7 +14,9 @@ data class CryptoEntity(
     val priceInUsdt: String,
     val changePercent: String,
     @ColumnInfo(name = "isPinned")
-    val isPinned: Boolean
+    val isPinned: Boolean,
+    @ColumnInfo(name = "isLiked")
+    val isLiked: Boolean
 ){
     fun toCrypto(): Crypto {
         return Crypto(
@@ -23,7 +25,8 @@ data class CryptoEntity(
             symbol = symbol,
             priceInUsdt = priceInUsdt,
             changePercent = changePercent,
-            isPinned = isPinned
+            isPinned = isPinned,
+            isLiked = isLiked
         )
     }
 }

@@ -12,7 +12,8 @@ data class PinnedCryptoEntity(
     val symbol: String,
     val priceInUsdt: String,
     val changePercent: String,
-    val isPinned: Boolean = true
+    val isPinned: Boolean = true,
+    val isLiked: Boolean
 ){
     fun toCrypto(): Crypto {
         return Crypto(
@@ -21,7 +22,8 @@ data class PinnedCryptoEntity(
             symbol = symbol,
             priceInUsdt = priceInUsdt,
             changePercent = changePercent,
-            isPinned = isPinned
+            isPinned = isPinned,
+            isLiked = isLiked
         )
     }
 }

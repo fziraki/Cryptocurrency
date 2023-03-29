@@ -6,10 +6,10 @@ import com.example.cryptocurrency.domain.repository.CryptoRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class UpdateCryptoPinUseCase @Inject constructor(
+class UpdateCryptoLikeUseCase @Inject constructor(
     private val cryptoRepository: CryptoRepository
 ) {
-    operator fun invoke(crypto: Crypto, isPinned: Boolean): Flow<Resource<Int>> {
-        return cryptoRepository.updateCryptoPin(crypto.id, isPinned)
+    operator fun invoke(crypto: Crypto, isLiked: Boolean): Flow<Resource<Int>> {
+        return cryptoRepository.updateCryptoLike(crypto.id, isLiked)
     }
 }

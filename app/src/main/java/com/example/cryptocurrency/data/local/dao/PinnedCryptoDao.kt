@@ -17,4 +17,7 @@ interface PinnedCryptoDao {
 
     @Query("DELETE FROM PinnedCryptoEntity WHERE id = :cryptoId")
     suspend fun deletePinnedCryptos(cryptoId: Int): Int
+
+    @Query("UPDATE PinnedCryptoEntity SET isLiked=:isLiked WHERE id = :cryptoId")
+    suspend fun updatePinnedCryptoLikeField(cryptoId: Int, isLiked: Boolean): Int
 }

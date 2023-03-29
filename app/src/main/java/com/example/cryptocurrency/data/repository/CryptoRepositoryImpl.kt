@@ -2,6 +2,7 @@ package com.example.cryptocurrency.data.repository
 
 import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.data.local.dao.CryptoDao
+import com.example.cryptocurrency.data.local.dao.LikedCryptoDao
 import com.example.cryptocurrency.data.local.dao.PinnedCryptoDao
 import com.example.cryptocurrency.data.remote.CryptoApi
 import com.example.cryptocurrency.domain.model.Crypto
@@ -16,7 +17,8 @@ import javax.inject.Inject
 class CryptoRepositoryImpl @Inject constructor(
     private val cryptoApi: CryptoApi,
     private val cryptoDao: CryptoDao,
-    private val pinnedCryptoDao: PinnedCryptoDao
+    private val pinnedCryptoDao: PinnedCryptoDao,
+    private val likedCryptoDao: LikedCryptoDao
 ): CryptoRepository {
 
     override fun getCryptoList(page: Int, pageSize: Int): Flow<Resource<List<Crypto>>> = flow {
@@ -32,8 +34,9 @@ class CryptoRepositoryImpl @Inject constructor(
             val remoteCryptoList = cryptoApi.getCryptoList()
             cryptoDao.insertCryptos(
                 remoteCryptoList.map { cryptoDto ->
-                    cryptoDto.toCryptoEntity(pinnedCryptoDao.getPinnedCryptos()
-                        .any{it.id == cryptoDto.id}
+                    cryptoDto.toCryptoEntity(
+                        isPinned = pinnedCryptoDao.getPinnedCryptos().any{it.id == cryptoDto.id},
+                        isLiked = likedCryptoDao.getLikedCryptos().any{it.id == cryptoDto.id},
                     )
                 }
             )
@@ -66,14 +69,23 @@ class CryptoRepositoryImpl @Inject constructor(
         } else emit(Result.success(emptyList()))
     }
 
-    override fun updateCrypto(cryptoId: Int, isPinned: Boolean): Flow<Resource<Int>> = flow {
+    override fun updateCryptoPin(cryptoId: Int, isPinned: Boolean): Flow<Resource<Int>> = flow {
         emit(Resource.Loading())
         try {
-            cryptoDao.updateCrypto(cryptoId, isPinned)
+            cryptoDao.updateCryptoPin(cryptoId, isPinned)
             emit(Resource.Success(1))
-            println("tag updateCrypto")
         }catch (e: IOException){
-            emit(Resource.Error(message = "Couldn't update crypto."))
+            emit(Resource.Error(message = "Couldn't update crypto pin."))
+        }
+    }
+
+    override fun updateCryptoLike(cryptoId: Int, isLiked: Boolean): Flow<Resource<Int>> = flow {
+        emit(Resource.Loading())
+        try {
+            cryptoDao.updateCryptoLike(cryptoId, isLiked)
+            emit(Resource.Success(1))
+        }catch (e: IOException){
+            emit(Resource.Error(message = "Couldn't update crypto pin."))
         }
     }
 
