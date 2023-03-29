@@ -28,6 +28,7 @@ class PinnedCryptoRepositoryImpl @Inject constructor(
         try {
             pinnedCryptoDao.insertPinnedCryptos(crypto.toPinnedCryptoEntity())
             emit(Resource.Success(1))
+            println("tag pinCrypto")
         }catch (e: IOException){
             emit(Resource.Error(message = "Couldn't pin crypto."))
         }
@@ -38,6 +39,7 @@ class PinnedCryptoRepositoryImpl @Inject constructor(
         try {
             pinnedCryptoDao.deletePinnedCryptos(cryptoId)
             emit(Resource.Success(1))
+            println("tag unPinCrypto")
         }catch (e: IOException){
             emit(Resource.Error(message = "Couldn't unPin crypto."))
         }

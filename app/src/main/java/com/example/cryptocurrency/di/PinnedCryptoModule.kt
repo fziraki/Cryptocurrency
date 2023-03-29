@@ -22,6 +22,7 @@ object PinnedCryptoModule {
         return PinnedCryptoRepositoryImpl(db.pinnedCryptoDao)
     }
 
+
     @Provides
     @ViewModelScoped
     fun provideGetPinnedCryptoListUseCase(pinnedCryptoRepository: PinnedCryptoRepository): GetPinnedCryptoListUseCase {
@@ -30,13 +31,17 @@ object PinnedCryptoModule {
 
     @Provides
     @ViewModelScoped
-    fun providePinCryptoUseCase(pinnedCryptoRepository: PinnedCryptoRepository): PinCryptoUseCase {
+    fun providePinCryptoUseCase(
+        pinnedCryptoRepository: PinnedCryptoRepository
+    ): PinCryptoUseCase {
         return PinCryptoUseCase(pinnedCryptoRepository)
     }
 
     @Provides
     @ViewModelScoped
-    fun provideUnPinCryptoUseCase(pinnedCryptoRepository: PinnedCryptoRepository): UnPinCryptoUseCase {
+    fun provideUnPinCryptoUseCase(
+        pinnedCryptoRepository: PinnedCryptoRepository
+    ): UnPinCryptoUseCase {
         return UnPinCryptoUseCase(pinnedCryptoRepository)
     }
 }

@@ -8,11 +8,11 @@ data class Crypto(
     val name: String,
     val symbol: String,
     val priceInUsdt: String,
-    val changePercent: String
+    val changePercent: String,
+    var isPinned: Boolean
 ){
     val priceInUsdtToShow = String.format("%.1f", priceInUsdt.toDouble())
     val changePercentToShow = String.format("%.1f", changePercent.toDouble())
-    var isPinned: Boolean = false
     var isLiked: Boolean = false
 
     fun toPinnedCryptoEntity(): PinnedCryptoEntity {
@@ -21,7 +21,8 @@ data class Crypto(
             name = name,
             symbol = symbol,
             priceInUsdt = priceInUsdt,
-            changePercent = changePercent
+            changePercent = changePercent,
+            isPinned = true
         )
 
     }
@@ -32,7 +33,8 @@ data class Crypto(
             name = name,
             symbol = symbol,
             priceInUsdt = priceInUsdt,
-            changePercent = changePercent
+            changePercent = changePercent,
+            isPinned = isPinned
         )
 
     }

@@ -1,5 +1,6 @@
 package com.example.cryptocurrency.data.local.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.cryptocurrency.domain.model.Crypto
@@ -11,7 +12,9 @@ data class CryptoEntity(
     val name: String,
     val symbol: String,
     val priceInUsdt: String,
-    val changePercent: String
+    val changePercent: String,
+    @ColumnInfo(name = "isPinned")
+    val isPinned: Boolean
 ){
     fun toCrypto(): Crypto {
         return Crypto(
@@ -19,7 +22,8 @@ data class CryptoEntity(
             name = name,
             symbol = symbol,
             priceInUsdt = priceInUsdt,
-            changePercent = changePercent
+            changePercent = changePercent,
+            isPinned = isPinned
         )
     }
 }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PinCryptoUseCase @Inject constructor(
-    private val pinnedCryptoRepository: PinnedCryptoRepository
+    private val pinnedCryptoRepository: PinnedCryptoRepository,
 ) {
     operator fun invoke(crypto: Crypto): Flow<Resource<Long>> {
         return pinnedCryptoRepository.pinCrypto(crypto)

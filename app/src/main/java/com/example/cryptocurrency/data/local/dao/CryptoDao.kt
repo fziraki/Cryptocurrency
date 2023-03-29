@@ -12,10 +12,13 @@ interface CryptoDao {
     @Query("SELECT * FROM CryptoEntity")
     suspend fun getCryptos(): List<CryptoEntity>
 
-    @Query("SELECT * FROM CryptoEntity LIMIT :pageSize OFFSET :startingIndex")
+    @Query("SELECT * FROM CryptoEntity ORDER BY isPinned DESC LIMIT :pageSize OFFSET :startingIndex")
     suspend fun getCryptosByPage(startingIndex: Int, pageSize: Int): List<CryptoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCryptos(cryptos: List<CryptoEntity>)
+
+    @Query("UPDATE CryptoEntity SET isPinned=:isPinned WHERE id = :cryptoId")
+    suspend fun updateCrypto(cryptoId: Int, isPinned: Boolean): Int
 
 }

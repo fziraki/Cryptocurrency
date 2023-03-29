@@ -2,6 +2,7 @@ package com.example.cryptocurrency.data.repository
 
 import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.data.local.dao.CryptoDao
+import com.example.cryptocurrency.data.local.dao.PinnedCryptoDao
 import com.example.cryptocurrency.data.remote.CryptoApi
 import com.example.cryptocurrency.domain.model.Crypto
 import com.example.cryptocurrency.domain.repository.CryptoRepository
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 class CryptoRepositoryImpl @Inject constructor(
     private val cryptoApi: CryptoApi,
-    private val cryptoDao: CryptoDao
+    private val cryptoDao: CryptoDao,
+    private val pinnedCryptoDao: PinnedCryptoDao
 ): CryptoRepository {
 
     override fun getCryptoList(page: Int, pageSize: Int): Flow<Resource<List<Crypto>>> = flow {
@@ -28,7 +30,13 @@ class CryptoRepositoryImpl @Inject constructor(
 
         try {
             val remoteCryptoList = cryptoApi.getCryptoList()
-            cryptoDao.insertCryptos(remoteCryptoList.map { it.toCryptoEntity() })
+            cryptoDao.insertCryptos(
+                remoteCryptoList.map { cryptoDto ->
+                    cryptoDto.toCryptoEntity(pinnedCryptoDao.getPinnedCryptos()
+                        .any{it.id == cryptoDto.id}
+                    )
+                }
+            )
         }catch (e: HttpException){
             emit(Resource.Error(
                 message = e.message?:"Something went wrong!",
@@ -58,5 +66,15 @@ class CryptoRepositoryImpl @Inject constructor(
         } else emit(Result.success(emptyList()))
     }
 
+    override fun updateCrypto(cryptoId: Int, isPinned: Boolean): Flow<Resource<Int>> = flow {
+        emit(Resource.Loading())
+        try {
+            cryptoDao.updateCrypto(cryptoId, isPinned)
+            emit(Resource.Success(1))
+            println("tag updateCrypto")
+        }catch (e: IOException){
+            emit(Resource.Error(message = "Couldn't update crypto."))
+        }
+    }
 
 }

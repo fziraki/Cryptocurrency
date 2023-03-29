@@ -13,12 +13,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.cryptocurrency.presentation.components.CryptoListItem
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CryptoListScreen(
+    navController: NavController,
     viewModel: CryptoListViewModel = hiltViewModel()
 ) {
 
@@ -76,7 +78,7 @@ fun CryptoListScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 0.dp),
+                        .padding(12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -85,25 +87,36 @@ fun CryptoListScreen(
                         modifier = Modifier.weight(1.5f),
                         text = "currency",
                         style = MaterialTheme.typography.body2,
-                        color = Color.DarkGray
+                        color = Color.Gray
                     )
 
                     Text(
                         modifier = Modifier.weight(1.5f),
                         text = "last price",
                         style = MaterialTheme.typography.body2,
-                        color = Color.DarkGray
+                        color = Color.Gray
                     )
 
                     Text(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1.5f),
                         text = "changes",
                         style = MaterialTheme.typography.body2,
-                        color = Color.DarkGray
+                        color = Color.Gray
                     )
 
-                    IconButton(modifier = Modifier.weight(1f), onClick = {}){}
-                    IconButton(modifier = Modifier.weight(1f), onClick = {}){}
+                    Button(
+                        modifier = Modifier.weight(2f),
+                        onClick = {
+//                            navController.navigate(Screen.CoinDetailScreen.route + "/${coin.id}")
+                        }
+                    ) {
+                        Text(
+                            modifier = Modifier,
+                            text = "favorite list",
+                            style = MaterialTheme.typography.body2,
+                            color = Color.DarkGray
+                        )
+                    }
 
                 }
             }
