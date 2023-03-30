@@ -18,6 +18,4 @@ interface LikedCryptoDao {
     @Query("DELETE FROM LikedCryptoEntity WHERE id = :cryptoId")
     suspend fun deleteLikedCryptos(cryptoId: Int): Int
 
-    @Query("UPDATE LikedCryptoEntity SET isPinned=:isPinned WHERE id = :cryptoId")
-    suspend fun updateLikedCryptoPinField(cryptoId: Int, isPinned: Boolean): Int
 }

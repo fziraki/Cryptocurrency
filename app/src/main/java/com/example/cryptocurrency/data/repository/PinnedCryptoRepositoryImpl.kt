@@ -43,14 +43,5 @@ class PinnedCryptoRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updatePinnedCryptoLikeField(cryptoId: Int, isLiked: Boolean): Flow<Resource<Int>> = flow {
-        emit(Resource.Loading())
-        try {
-            pinnedCryptoDao.updatePinnedCryptoLikeField(cryptoId, isLiked)
-            emit(Resource.Success(1))
-        }catch (e: IOException){
-            emit(Resource.Error(message = "Couldn't update crypto pin."))
-        }
-    }
 
 }

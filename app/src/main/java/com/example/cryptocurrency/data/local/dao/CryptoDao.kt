@@ -18,10 +18,4 @@ interface CryptoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCryptos(cryptos: List<CryptoEntity>)
 
-    @Query("UPDATE CryptoEntity SET isPinned=:isPinned WHERE id = :cryptoId")
-    suspend fun updateCryptoPin(cryptoId: Int, isPinned: Boolean): Int
-
-    @Query("UPDATE CryptoEntity SET isLiked=:isLiked WHERE id = :cryptoId")
-    suspend fun updateCryptoLike(cryptoId: Int, isLiked: Boolean): Int
-
 }

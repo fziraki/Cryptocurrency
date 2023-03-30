@@ -11,9 +11,7 @@ data class LikedCryptoEntity(
     val name: String,
     val symbol: String,
     val priceInUsdt: String,
-    val changePercent: String,
-    val isPinned: Boolean,
-    val isLiked: Boolean = true
+    val changePercent: String
 ){
     fun toCrypto(): Crypto {
         return Crypto(
@@ -22,8 +20,7 @@ data class LikedCryptoEntity(
             symbol = symbol,
             priceInUsdt = priceInUsdt,
             changePercent = changePercent,
-            isPinned = isPinned,
-            isLiked = isLiked
+            isPinned = false
         )
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import com.example.cryptocurrency.common.theme.CryptocurrencyAppTheme
-import com.example.cryptocurrency.domain.model.Crypto
 import com.example.cryptocurrency.presentation.components.DrawerBody
 import com.example.cryptocurrency.presentation.components.DrawerHeader
 import com.example.cryptocurrency.presentation.crypto_list.CryptoListScreen
@@ -29,15 +28,6 @@ class MainActivity : ComponentActivity() {
                 val scope = rememberCoroutineScope()
                 Scaffold(
                     scaffoldState = scaffoldState,
-                    topBar = {
-//                        AppBar(
-//                            onNavigationIconClick = {
-//                                scope.launch {
-//                                    scaffoldState.drawerState.open()
-//                                }
-//                            }
-//                        )
-                    },
                     drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
                     drawerContent = {
                         DrawerHeader()

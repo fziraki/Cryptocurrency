@@ -7,6 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface CryptoRepository {
     fun getCryptoList(page: Int, pageSize: Int): Flow<Resource<List<Crypto>>>
     fun getCryptoListByPage(page: Int, pageSize: Int): Flow<Result<List<Crypto>>>
-    fun updateCryptoPin(cryptoId: Int, isPinned: Boolean): Flow<Resource<Int>>
-    fun updateCryptoLike(cryptoId: Int, isLiked: Boolean): Flow<Resource<Int>>
+
 }

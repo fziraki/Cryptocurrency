@@ -11,9 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.cryptocurrency.R
 import com.example.cryptocurrency.presentation.components.CryptoListItem
 import kotlinx.coroutines.launch
 
@@ -85,21 +87,21 @@ fun CryptoListScreen(
 
                     Text(
                         modifier = Modifier.weight(1.5f),
-                        text = "currency",
+                        text = stringResource(R.string.currency),
                         style = MaterialTheme.typography.body2,
                         color = Color.Gray
                     )
 
                     Text(
                         modifier = Modifier.weight(1.5f),
-                        text = "last price",
+                        text = stringResource(R.string.last_price),
                         style = MaterialTheme.typography.body2,
                         color = Color.Gray
                     )
 
                     Text(
-                        modifier = Modifier.weight(1.5f),
-                        text = "changes",
+                        modifier = Modifier.weight(1.3f),
+                        text = stringResource(R.string.changes),
                         style = MaterialTheme.typography.body2,
                         color = Color.Gray
                     )
@@ -110,7 +112,7 @@ fun CryptoListScreen(
                     ) {
                         Text(
                             modifier = Modifier,
-                            text = "favorite list",
+                            text = stringResource(R.string.favorite_list),
                             style = MaterialTheme.typography.body2,
                             color = Color.DarkGray
                         )

@@ -3,10 +3,9 @@ package com.example.cryptocurrency.di
 import com.example.cryptocurrency.data.local.CryptoDatabase
 import com.example.cryptocurrency.data.repository.PinnedCryptoRepositoryImpl
 import com.example.cryptocurrency.domain.repository.PinnedCryptoRepository
-import com.example.cryptocurrency.domain.use_case.GetPinnedCryptoListUseCase
-import com.example.cryptocurrency.domain.use_case.PinCryptoUseCase
-import com.example.cryptocurrency.domain.use_case.UnPinCryptoUseCase
-import com.example.cryptocurrency.domain.use_case.UpdatePinCryptoLikeFieldUseCase
+import com.example.cryptocurrency.domain.use_case.pin.GetPinnedCryptoListUseCase
+import com.example.cryptocurrency.domain.use_case.pin.PinCryptoUseCase
+import com.example.cryptocurrency.domain.use_case.pin.UnPinCryptoUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,13 +43,5 @@ object PinnedCryptoModule {
         pinnedCryptoRepository: PinnedCryptoRepository
     ): UnPinCryptoUseCase {
         return UnPinCryptoUseCase(pinnedCryptoRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideUpdatePinCryptoLikeFieldUseCase(
-        pinnedCryptoRepository: PinnedCryptoRepository
-    ): UpdatePinCryptoLikeFieldUseCase {
-        return UpdatePinCryptoLikeFieldUseCase(pinnedCryptoRepository)
     }
 }

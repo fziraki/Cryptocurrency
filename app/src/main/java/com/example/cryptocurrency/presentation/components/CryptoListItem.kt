@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.cryptocurrency.R
@@ -55,7 +56,7 @@ fun CryptoListItem(
         )
 
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.8f),
             text = crypto.changePercentToShow,
             color = if(crypto.changePercent.toDouble() > 0) Color.Green else Color.Red,
             style = MaterialTheme.typography.body1,
@@ -76,7 +77,7 @@ fun CryptoListItem(
                     painterResource(id = R.drawable.ic_pin_border)
                 },
                 tint = Color.LightGray,
-                contentDescription = "pin"
+                contentDescription = stringResource(R.string.pin)
             )
         }
 
@@ -94,7 +95,7 @@ fun CryptoListItem(
                     painterResource(id = R.drawable.ic_star_border)
                 },
                 tint = Color.LightGray,
-                contentDescription = "like"
+                contentDescription = stringResource(R.string.like)
             )
         }
 

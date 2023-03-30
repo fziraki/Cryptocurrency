@@ -8,6 +8,5 @@ interface PinnedCryptoRepository {
     fun getPinnedCryptoList(): Flow<Resource<List<Crypto>>>
     fun pinCrypto(crypto: Crypto): Flow<Resource<Long>>
     fun unPinCrypto(cryptoId: Int): Flow<Resource<Int>>
-    fun updatePinnedCryptoLikeField(cryptoId: Int, isLiked: Boolean): Flow<Resource<Int>>
 
 }

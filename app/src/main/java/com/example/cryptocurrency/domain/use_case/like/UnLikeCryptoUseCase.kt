@@ -1,4 +1,4 @@
-package com.example.cryptocurrency.domain.use_case
+package com.example.cryptocurrency.domain.use_case.like
 
 import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.domain.repository.LikedCryptoRepository

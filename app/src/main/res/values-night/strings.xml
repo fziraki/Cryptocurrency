@@ -2,4 +2,10 @@
 <resources>
     <string name="cryptos">cryptos</string>
     <string name="likes">likes</string>
+    <string name="pin">pin</string>
+    <string name="like">like</string>
+    <string name="favorite_list">Favorite List</string>
+    <string name="currency">currency</string>
+    <string name="last_price">last price</string>
+    <string name="changes">changes</string>
 </resources>
