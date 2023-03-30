@@ -3,14 +3,19 @@ package com.example.cryptocurrency.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import com.example.cryptocurrency.common.theme.CryptocurrencyAppTheme
+import com.example.cryptocurrency.presentation.components.DrawerBody
+import com.example.cryptocurrency.presentation.components.DrawerHeader
 import com.example.cryptocurrency.presentation.crypto_list.CryptoListScreen
-import com.example.cryptocurrency.presentation.ui.theme.CryptocurrencyAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -19,21 +24,35 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CryptocurrencyAppTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.CryptoListScreen.route
-                    ) {
-                        composable(
-                            route = Screen.CryptoListScreen.route
-                        ) {
-                            CryptoListScreen(navController)
-                        }
-
+                val scaffoldState = rememberScaffoldState()
+                val scope = rememberCoroutineScope()
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
+                    drawerContent = {
+                        DrawerHeader()
+                        DrawerBody(
+                            onItemClick = {
+                            }
+                        )
+                    }
+                ){
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                    ){
+                        CryptoListScreen(
+                            onButtonClick = {
+                                scope.launch {
+                                    scaffoldState.drawerState.open()
+                                }
+                            }
+                        )
                     }
                 }
+
             }
         }
     }
+
 }
