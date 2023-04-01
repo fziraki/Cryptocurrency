@@ -7,7 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.cryptocurrency.common.DefaultPaginator
 import com.example.cryptocurrency.common.Resource
 import com.example.cryptocurrency.domain.model.Crypto
-import com.example.cryptocurrency.domain.use_case.*
+import com.example.cryptocurrency.domain.use_case.GetCryptoListByPageUseCase
+import com.example.cryptocurrency.domain.use_case.GetCryptoListUseCase
 import com.example.cryptocurrency.domain.use_case.like.GetLikedCryptoListUseCase
 import com.example.cryptocurrency.domain.use_case.like.LikeCryptoUseCase
 import com.example.cryptocurrency.domain.use_case.like.UnLikeCryptoUseCase
@@ -15,6 +16,7 @@ import com.example.cryptocurrency.domain.use_case.pin.GetPinnedCryptoListUseCase
 import com.example.cryptocurrency.domain.use_case.pin.PinCryptoUseCase
 import com.example.cryptocurrency.domain.use_case.pin.UnPinCryptoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -78,31 +80,18 @@ class CryptoListViewModel @Inject constructor(
     }
 
     fun refresh() {
-        getCryptos()
+        viewModelScope.launch {
+            while(true) {
+                getCryptos()
+                delay(20_000)
+            }
+        }
         getLikedCryptos()
         getPinnedCryptos()
         _isRefreshing.value = false
 
         combineCryptosLikedPinned()
         combineLikedPinnedToGetLiked()
-        combinePinnedLikedToGetPinned()
-    }
-
-    private fun combinePinnedLikedToGetPinned() {
-        viewModelScope.launch {
-            combine(
-                _likedState,
-                _pinnedState
-            ){ likes, pins ->
-                pins.map { pinnedCrypto ->
-                    pinnedCrypto.isLiked = likes.any { it.id == pinnedCrypto.id }
-                    pinnedCrypto.isPinned = true
-                    pinnedCrypto
-                }
-            }.collect { pins ->
-                _pinnedState.value = pins
-            }
-        }
     }
 
     private fun combineLikedPinnedToGetLiked() {
@@ -115,7 +104,7 @@ class CryptoListViewModel @Inject constructor(
                     likedCrypto.isPinned = pins.any { it.id == likedCrypto.id }
                     likedCrypto.isLiked = true
                     likedCrypto
-                }
+                }.sortedByDescending { it.isPinned }
             }.collect { likes ->
                 _likedState.value = likes
             }
@@ -136,7 +125,7 @@ class CryptoListViewModel @Inject constructor(
                 cryptos.map {crypto ->
                     crypto.isPinned = pins.any { it.id == crypto.id }
                     crypto
-                }
+                }.sortedByDescending { it.isPinned }
             }.collect {
                 _state.value = state.value.copy(cryptosToShow = it)
             }

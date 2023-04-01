@@ -1,5 +1,7 @@
 package com.example.cryptocurrency.presentation.crypto_list
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,7 +21,7 @@ import com.example.cryptocurrency.R
 import com.example.cryptocurrency.presentation.components.CryptoListItem
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CryptoListScreen(
     viewModel: CryptoListViewModel = hiltViewModel(),
@@ -127,15 +129,21 @@ fun CryptoListScreen(
                     if (index >= state.cryptosToShow.size - 1 && !state.endReached && !state.isPagingLoading) {
                         viewModel.loadNextItems()
                     }
-                    CryptoListItem(
-                        crypto = crypto,
-                        onItemPinClick = { toggledCrypto, isPinned ->
-                            viewModel.onUiEvent(CryptoListViewModel.UiEvent.TogglePin(toggledCrypto, isPinned))
-                        },
-                        onItemLikeClick = { toggledCrypto, isLiked ->
-                            viewModel.onUiEvent(CryptoListViewModel.UiEvent.ToggleLike(toggledCrypto, isLiked))
+                    key(crypto.isLiked) {
+                        key(crypto.isPinned) {
+                            CryptoListItem(
+                                modifier = Modifier.animateItemPlacement(tween(durationMillis = 500)),
+                                crypto = crypto,
+                                onItemPinClick = { toggledCrypto, isPinned ->
+                                    viewModel.onUiEvent(CryptoListViewModel.UiEvent.TogglePin(toggledCrypto, isPinned))
+                                },
+                                onItemLikeClick = { toggledCrypto, isLiked ->
+                                    viewModel.onUiEvent(CryptoListViewModel.UiEvent.ToggleLike(toggledCrypto, isLiked))
+                                }
+                            )
                         }
-                    )
+
+                    }
                 }
                 item {
                     if (state.isPagingLoading) {
@@ -152,6 +160,8 @@ fun CryptoListScreen(
             }
 
         }
+
+
 
     }
 

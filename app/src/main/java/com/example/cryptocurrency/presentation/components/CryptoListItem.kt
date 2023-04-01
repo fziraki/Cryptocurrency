@@ -25,6 +25,7 @@ import com.example.cryptocurrency.domain.model.Crypto
 
 @Composable
 fun CryptoListItem(
+    modifier: Modifier,
     crypto: Crypto,
     onItemPinClick: (Crypto, Boolean) -> Unit,
     onItemLikeClick: (Crypto, Boolean) -> Unit
@@ -34,7 +35,7 @@ fun CryptoListItem(
     val isCryptoLiked = remember { mutableStateOf(crypto.isLiked) }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .background(if (isCryptoPinned.value) Color.Gray.copy(alpha = 0.1f) else Color.Transparent)
             .fillMaxWidth()
             .padding(20.dp),
